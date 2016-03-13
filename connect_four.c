@@ -1,4 +1,4 @@
-#include <time.h>
+//#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,7 +8,7 @@ int height[7];
 void draw_board() {
 	int i, j, x;
 	system("cls");
-	printf("Player 1 = o\nPlayer 2 = x\n\n\n\n");
+	printf("~~~~Connect Four~~~~\nPlayer 1 = o\nPlayer 2 = x\n\n\n");
 	for (i=0; i<6; i++) {
 		for (j=0; j<7; j++) {
 			x = map[5-i+3][j+3];
@@ -67,7 +67,7 @@ void main() {
 	srand(12);
 	draw_board();
 	
-	for (i=0; i<50; i++) {
+	for (i=0; i<42; i++) {
 		b = i % 2 + 1;
 		printf("Player %d: ",b);
 		scanf("%d", &u);
@@ -84,9 +84,13 @@ void main() {
 		
 		if (check_win(u, b)) {
 			printf("Player %d wins!\n", b);
+			system("pause");
 			return;
 		}
 	}
+	printf("Draw!\n");
+	system("pause");
+	return;
 }
 
 
