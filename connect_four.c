@@ -1,18 +1,31 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 
 int map[12][13];
 int height[7];
 
 void draw_board() {
 	int i, j, x;
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_FONT_INFOEX info = {0};
+    info.cbSize       = sizeof(info);
+    info.dwFontSize.Y = 36;
+    info.FontWeight   = FW_NORMAL;
+    wcscpy(info.FaceName, L"Lucida Console");
+    SetCurrentConsoleFontEx(h, FALSE, &info);
+	SetConsoleTextAttribute(h,240);//10);
 	system("cls");
-	printf("~~~~Connect Four~~~~\nPlayer = o\nComputer = x\n\n\n");
+	printf("~~Connect Four~~\n\n\n");
 	for (i=0; i<6; i++) {
 		for (j=0; j<7; j++) {
 			x = map[5-i+3][j+3];
-			printf("|%c",-35*x*x + 114*x + 32);  //ascii conversion
+			printf("|");
+			//SetConsoleTextAttribute(h,x*(12-3*x));
+			SetConsoleTextAttribute(h,4.5*x*x-10.5*x+255);
+			printf("%c",254);
+			SetConsoleTextAttribute(h,240);//10);
 		}
 		printf("|\n");
 	}
@@ -62,10 +75,10 @@ int check_win(int u, int b) {
 }
 
 int move_computer() {
-	int i, c, bad;
+	int i, c, bad, n;
 	bad = 1;
 	c = -1;
-	
+	n = 0;
 	
 	// can I win?
 	for (i=0; i<7; i++) {
@@ -96,7 +109,7 @@ int move_computer() {
 	}
 	
 	if (c==-1) {
-		while(bad==1) {
+		while(bad==1 && n<100) {
 			bad = 0;  // hope for the best
 			
 			// make random move
@@ -127,6 +140,8 @@ int move_computer() {
 			// undo move
 			height[c]--;
 			map[height[c]+3][c+3] = 0;
+			
+			n++;
 		}
 	}
 	
@@ -154,7 +169,9 @@ void main() {
 		height[u]++;
 		draw_board();
 		if (check_win(u, 1)) {
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),249);
 			printf("Player wins!\n");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),240);
 			system("pause");
 			return;
 		}
@@ -162,7 +179,9 @@ void main() {
 		draw_board();
 		printf("Computer: %d\n",c+1);
 		if (check_win(c, 2)) {
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),252);
 			printf("Computer wins!\n");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),240);
 			system("pause");
 			return;
 		}
