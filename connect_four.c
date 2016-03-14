@@ -92,7 +92,7 @@ int check_win(int u, int b) {
 }
 
 int move_computer() {
-	int i, c, bad, n;
+	int i, j, c, bad, n, d, e;
 	bad = 1;
 	c = -1;
 	n = 0;
@@ -125,6 +125,81 @@ int move_computer() {
 		}
 	}
 	
+	// can you get a 2-way win?
+	if (c==-1) {
+		for (i=0; i<7; i++) {
+			if (height[i]!=6) {
+				d = 0;
+				map[height[i]+3][i+3] = 1;
+				height[i]++;
+				for (j=0; j<7; j++) {
+					if (height[j]!=6) {
+						map[height[j]+3][j+3] = 1;
+						height[j]++;
+						if (check_win(j, 1)) {
+							d++;
+							e = j;
+						}
+						height[j]--;
+						map[height[j]+3][j+3] = 0;
+					}
+				}
+				if (d>=2) {
+					c = i;
+				} else if (d==1) {
+					d = 0;	
+					map[height[e]+3][e+3] = 2;
+					height[e]++;
+					for (j=0; j<7; j++) {
+						if (height[j]!=6) {
+							map[height[j]+3][j+3] = 1;
+							height[j]++;
+							if (check_win(j, 1)) {
+								d++;
+							}
+							height[j]--;
+							map[height[j]+3][j+3] = 0;
+						}
+					}
+					height[e]--;
+					map[height[e]+3][e+3] = 0;
+					if (d>0) {
+						c = i;
+					}				
+				} 
+				height[i]--;
+				map[height[i]+3][i+3] = 0;
+				
+				// check if blocking 2-way win leads to win
+				if (c!=-1) {
+					d = 0;
+					map[height[c]+3][c+3] = 2;
+					height[c]++;
+					for (j=0; j<7; j++) {
+						if (height[j]!=6) {
+							map[height[j]+3][j+3] = 1;
+							height[j]++;
+							if (check_win(j, 1)) {
+								d++;
+							}
+							height[j]--;
+							map[height[j]+3][j+3] = 0;
+						}
+					}
+					height[i]--;
+					map[height[i]+3][i+3] = 0;
+					if (d==0) {
+						break;
+					} else {
+						c = -1;
+					}
+				}
+			}
+		}
+	}
+		
+	// make random  move as long as it doesnt 
+	// lead to a win or a direct 2-way win
 	if (c==-1) {
 		while(bad==1 && n<100) {
 			bad = 0;  // hope for the best
@@ -144,12 +219,29 @@ int move_computer() {
 					height[i]++;
 					if (check_win(i, 1)) {
 						bad = 1;
-					}
-					height[i]--;
-					map[height[i]+3][i+3] = 0;
-					
-					if (bad==1) {
+						height[i]--;
+						map[height[i]+3][i+3] = 0;
 						break;
+					} else {
+						// could you get a 2-way win?
+						d = 0;
+						for (j=0; j<7; j++) {
+							if (height[j]!=6) {
+								map[height[j]+3][j+3] = 1;
+								height[j]++;
+								if (check_win(j, 1)) {
+									d++;
+								}
+								height[j]--;
+								map[height[j]+3][j+3] = 0;
+							}
+						}
+						height[i]--;
+						map[height[i]+3][i+3] = 0;
+						if (d>=2) {
+							bad = 1;
+							break;
+						}						
 					}
 				}
 			}
@@ -190,6 +282,7 @@ int move_player() {
 void main() {
 	int i, c, u, n;
 	srand(time(NULL));
+	n = 0;
 
 	while(1) {
 		memset(map, 0, sizeof map);
