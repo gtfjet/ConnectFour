@@ -10,19 +10,7 @@ int win, loss, draw;
 void draw_board() {
 	int i, j, x;
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	SMALL_RECT size = {0,0,17,17};
-	COORD coord = {18,18};
-	CONSOLE_FONT_INFOEX info = {0};
-	info.cbSize = sizeof(info);
-    info.dwFontSize.Y = 36;
-    info.FontWeight = FW_NORMAL;
-    wcscpy(info.FaceName, L"Lucida Console");
-	SetConsoleWindowInfo(h, TRUE, &size);
-	SetConsoleScreenBufferSize(h, coord);
-    SetCurrentConsoleFontEx(h, FALSE, &info);
-	SetConsoleTextAttribute(h,240);
 	system("cls");
-	
 	printf("~~Connect Four~~\n\n");
 	SetConsoleTextAttribute(h,249);
 	printf("%d",win);
@@ -186,8 +174,8 @@ int move_computer() {
 							map[height[j]+3][j+3] = 0;
 						}
 					}
-					height[i]--;
-					map[height[i]+3][i+3] = 0;
+					height[c]--;
+					map[height[c]+3][c+3] = 0;
 					if (d==0) {
 						break;
 					} else {
@@ -281,6 +269,18 @@ int move_player() {
 
 void main() {
 	int i, c, u, n;
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SMALL_RECT size = {0,0,17,17};
+	COORD coord = {18,18};
+	CONSOLE_FONT_INFOEX info = {0};
+	info.cbSize = sizeof(info);
+    info.dwFontSize.Y = 36;
+    info.FontWeight = FW_NORMAL;
+    wcscpy(info.FaceName, L"Lucida Console");
+	SetConsoleWindowInfo(h, TRUE, &size);
+	SetConsoleScreenBufferSize(h, coord);
+    SetCurrentConsoleFontEx(h, FALSE, &info);
+	SetConsoleTextAttribute(h,240);
 	srand(time(NULL));
 	n = 0;
 
@@ -334,48 +334,3 @@ void main() {
 		getchar();
 	}
 }
-
-
-
-
-
-
-/*	
-	// check vertically
-	if (map[y-1][x] == b && map[y-2][x] == b && height[u]!=6) {
-		c = u;
-		
- 	// check horizontally 
-	} else if (map[y][x-2] == b && map[y][x-1] == b && u < 6 && map[y][x+1] == 0 && height[u+1]==height[u]) {
-		c = u+1;
- 	} else if (map[y][x-2] == b && map[y][x-1] == b && u > 2 && map[y][x-3] == 0 && height[u-3]==height[u]) {
-		c = u-3;
-	} else if (map[y][x-1] == b && map[y][x+1] == b && u < 5 && map[y][x+2] == 0 && height[u+2]==height[u]) {
-		c = u+2;
-	} else if (map[y][x-1] == b && map[y][x+1] == b && u > 1 && map[y][x-2] == 0 && height[u-2]==height[u]) {
-		c = u-2;
-	} else if (map[y][x+1] == b && map[y][x+2] == b && u < 4 && map[y][x+3] == 0 && height[u+3]==height[u]) {
-		c = u+3;
-	} else if (map[y][x+1] == b && map[y][x+2] == b && u > 0 && map[y][x-1] == 0 && height[u+1]==height[u]) {
-		c = u-1; 
-	
-	//} else if (map[y][x-1] == b && map[y][x+1] == b && map[y][x+2] == b) {
-	//} else if (map[y][x+1] == b && map[y][x+2] == b && map[y][x+3] == b) {
-
-	// check diagonally 
-	} else if (map[y-3][x-3] == b && map[y-2][x-2] == b && map[y-1][x-1] == b) {
-		return 1;
-	} else if (map[y-2][x-2] == b && map[y-1][x-1] == b && map[y+1][x+1] == b) {
-		return 1;
-	} else if (map[y-1][x-1] == b && map[y+1][x+1] == b && map[y+2][x+2] == b) {
-		return 1;
-	} else if (map[y+1][x+1] == b && map[y+2][x+2] == b && map[y+3][x+3] == b) {
-		return 1;
-	} else if (map[y+3][x-3] == b && map[y+2][x-2] == b && map[y+1][x-1] == b) {
-		return 1;
-	} else if (map[y+2][x-2] == b && map[y+1][x-1] == b && map[y-1][x+1] == b) {
-		return 1;
-	} else if (map[y+1][x-1] == b && map[y-1][x+1] == b && map[y-2][x+2] == b) {
-		return 1;
-	} else if (map[y-1][x+1] == b && map[y-2][x+2] == b && map[y-3][x+3] == b) {
-		return 1; */
