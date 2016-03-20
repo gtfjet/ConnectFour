@@ -6,6 +6,7 @@
 int map[12][13];
 int height[7];
 int win, loss, draw;
+int total[7];
 
 void draw_board() {
 	int i, j, x;
@@ -79,171 +80,80 @@ int check_win(int u, int b) {
 	}
 }
 
-int move_computer() {
-	int i, j, c, bad, n, d, e;
-	bad = 1;
+// zero based get max's index
+int get_max() {
+	int i, c, max;
 	c = -1;
-	n = 0;
-	
-	// can I win?
+	max = 0;
 	for (i=0; i<7; i++) {
 		if (height[i]!=6) {
-			map[height[i]+3][i+3] = 2;
-			height[i]++;
-			if (check_win(i, 2)) {
+			if (c==-1 || total[i]>max)
+			{
+				max = total[i];
 				c = i;
 			}
-			height[i]--;
-			map[height[i]+3][i+3] = 0;
-		}
-	} 
-	
-	// can you win?
-	if (c==-1) {
-		for (i=0; i<7; i++) {
-			if (height[i]!=6) {
-				map[height[i]+3][i+3] = 1;
-				height[i]++;
-				if (check_win(i, 1)) {
-					c = i;
-				}
-				height[i]--;
-				map[height[i]+3][i+3] = 0;
-			}
 		}
 	}
-	
-	// can you get a 2-way win?
-	if (c==-1) {
-		for (i=0; i<7; i++) {
-			if (height[i]!=6) {
-				d = 0;
-				map[height[i]+3][i+3] = 1;
-				height[i]++;
-				for (j=0; j<7; j++) {
-					if (height[j]!=6) {
-						map[height[j]+3][j+3] = 1;
-						height[j]++;
-						if (check_win(j, 1)) {
-							d++;
-							e = j;
-						}
-						height[j]--;
-						map[height[j]+3][j+3] = 0;
-					}
-				}
-				if (d>=2) {
-					c = i;
-				} else if (d==1) {
-					d = 0;	
-					map[height[e]+3][e+3] = 2;
-					height[e]++;
-					for (j=0; j<7; j++) {
-						if (height[j]!=6) {
-							map[height[j]+3][j+3] = 1;
-							height[j]++;
-							if (check_win(j, 1)) {
-								d++;
-							}
-							height[j]--;
-							map[height[j]+3][j+3] = 0;
-						}
-					}
-					height[e]--;
-					map[height[e]+3][e+3] = 0;
-					if (d>0) {
-						c = i;
-					}				
-				} 
-				height[i]--;
-				map[height[i]+3][i+3] = 0;
-				
-				// check if blocking 2-way win leads to win
-				if (c!=-1) {
-					d = 0;
-					map[height[c]+3][c+3] = 2;
-					height[c]++;
-					for (j=0; j<7; j++) {
-						if (height[j]!=6) {
-							map[height[j]+3][j+3] = 1;
-							height[j]++;
-							if (check_win(j, 1)) {
-								d++;
-							}
-							height[j]--;
-							map[height[j]+3][j+3] = 0;
-						}
-					}
-					height[c]--;
-					map[height[c]+3][c+3] = 0;
-					if (d==0) {
-						break;
-					} else {
-						c = -1;
-					}
-				}
-			}
-		}
-	}
-		
-	// make random  move as long as it doesnt 
-	// lead to a win or a direct 2-way win
-	if (c==-1) {
-		while(bad==1 && n<100) {
-			bad = 0;  // hope for the best
-			
-			// make random move
+	if (total[0]==0 && total[1]==0 && total[2]==0 && total[3]==0 && total[4]==0 && total[5]==0 && total[6]==0) {
+		// pick random
+		c = rand() % 7;
+		while (height[c]==6) {
 			c = rand() % 7;
-			while (height[c]==6) {
-				c = rand() % 7;
-			}
-			map[height[c]+3][c+3] = 2;
-			height[c]++;
-		
-			// could you win?
-			for (i=0; i<7; i++) {
-				if (height[i]!=6) {
-					map[height[i]+3][i+3] = 1;
-					height[i]++;
-					if (check_win(i, 1)) {
-						bad = 1;
-						height[i]--;
-						map[height[i]+3][i+3] = 0;
-						break;
-					} else {
-						// could you get a 2-way win?
-						d = 0;
-						for (j=0; j<7; j++) {
-							if (height[j]!=6) {
-								map[height[j]+3][j+3] = 1;
-								height[j]++;
-								if (check_win(j, 1)) {
-									d++;
-								}
-								height[j]--;
-								map[height[j]+3][j+3] = 0;
-							}
-						}
-						height[i]--;
-						map[height[i]+3][i+3] = 0;
-						if (d>=2) {
-							bad = 1;
-							break;
-						}						
-					}
-				}
-			}
-			
-			// undo move
-			height[c]--;
-			map[height[c]+3][c+3] = 0;
-			
-			n++;
 		}
 	}
+	return c;
+}
+
+void count_wins(int n, int r) {
+	int i, b;
+	b = n%2 + 1;
 	
-	// make move!
-	map[height[c]+3][c+3] = 2;
+	if (n < 5) {
+		for (i=0; i<7; i++) {
+			if (height[i]!=6) {
+				map[height[i]+3][i+3] = b;  //b to i
+				height[i]++;
+				if (check_win(i, b)) {
+					if (b==1) {
+						total[r] += -1;   //if player won
+					} else {
+						total[r] += 1;   //if computer won
+					}
+				} else {
+					count_wins(n+1, r);  //recusive
+				}
+				height[i]--;
+				map[height[i]+3][i+3] = 0;	//b from i
+			}
+		}
+	}
+}
+
+int move_computer() {
+	int i, c;
+	for (i=0; i<7; i++) {
+		if (height[i]!=6) {
+			map[height[i]+3][i+3] = 2;  //comp to i
+			height[i]++;
+			if (check_win(i, 2)) {
+				return i;
+			}
+			height[i]--;
+			map[height[i]+3][i+3] = 0;	//comp from i
+		}
+	} 	
+	memset(total, 0, sizeof total);
+	for (i=0; i<7; i++) {
+		if (height[i]!=6) {
+			map[height[i]+3][i+3] = 2;  //comp to i
+			height[i]++;
+			count_wins(0,i);
+			height[i]--;
+			map[height[i]+3][i+3] = 0;	//comp from i
+		}
+	}
+	c = get_max();			
+	map[height[c]+3][c+3] = 2;  //comp to c
 	height[c]++;
 	return c;
 }
@@ -270,8 +180,8 @@ int move_player() {
 void main() {
 	int i, c, u, n;
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	SMALL_RECT size = {0,0,17,17};
-	COORD coord = {18,18};
+	SMALL_RECT size = {0,0,40,40};//17,17};
+	COORD coord = {41,41};//{18,18};
 	CONSOLE_FONT_INFOEX info = {0};
 	info.cbSize = sizeof(info);
     info.dwFontSize.Y = 36;
@@ -304,6 +214,7 @@ void main() {
 			}
 			c = move_computer();
 			draw_board();
+			printf("%d,%d,%d,%d,%d,%d,%d\n",total[0],total[1],total[2],total[3],total[4],total[5],total[6]);
 			printf("Computer: %d\n",c+1);
 			if (check_win(c, 2)) {
 				loss++;
