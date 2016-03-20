@@ -108,14 +108,18 @@ void count_wins(int n, int r) {
 	int i, b;
 	b = n%2 + 1;
 	
-	if (n < 7) {
+	if (n < 5) {
 		for (i=0; i<7; i++) {
 			if (height[i]!=6) {
 				map[height[i]+3][i+3] = b;  //b to i
 				height[i]++;
 				if (check_win(i, b)) {
 					if (b==1) {
-						total[r] += -1;   //if player won
+						if (n==0) {
+							total[r] += -5;  //if player won on next move
+						} else {
+							total[r] += -1;  //if player won later
+						}
 					} else {
 						total[r] += 1;   //if computer won
 					}
