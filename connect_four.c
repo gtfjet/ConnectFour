@@ -108,7 +108,7 @@ void count_wins(int n, int r) {
 	int i, b;
 	b = n%2 + 1;
 	
-	if (n < 5) {
+	if (n < 7) {
 		for (i=0; i<7; i++) {
 			if (height[i]!=6) {
 				map[height[i]+3][i+3] = b;  //b to i
@@ -180,8 +180,8 @@ int move_player() {
 void main() {
 	int i, c, u, n;
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	SMALL_RECT size = {0,0,40,40};//17,17};
-	COORD coord = {41,41};//{18,18};
+	SMALL_RECT size = {0,0,17,17};
+	COORD coord = {18,18};
 	CONSOLE_FONT_INFOEX info = {0};
 	info.cbSize = sizeof(info);
     info.dwFontSize.Y = 36;
@@ -214,7 +214,7 @@ void main() {
 			}
 			c = move_computer();
 			draw_board();
-			printf("%d,%d,%d,%d,%d,%d,%d\n",total[0],total[1],total[2],total[3],total[4],total[5],total[6]);
+			//printf("%d,%d,%d,%d,%d,%d,%d\n",total[0],total[1],total[2],total[3],total[4],total[5],total[6]);
 			printf("Computer: %d\n",c+1);
 			if (check_win(c, 2)) {
 				loss++;
