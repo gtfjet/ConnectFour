@@ -104,27 +104,27 @@ int get_max() {
 	return c;
 }
 
-void count_wins(int n, int r) {
+void count_wins(int n, int r, int k) {
 	int i, b;
 	b = n%2 + 1;
 	
-	if (n < 5) {
+	if (n < (7-k)) {
 		for (i=0; i<7; i++) {
 			if (height[i]!=6) {
 				map[height[i]+3][i+3] = b;  //b to i
 				height[i]++;
 				if (check_win(i, b)) {
-					if (b==1) {
-						if (n==0) {
-							total[r] += -5;  //if player won on next move
-						} else {
+					if (b==(3-k)) {
+						//if (n==0) {
+						//	total[r] += -5;  //if player won on next move
+						//} else {
 							total[r] += -1;  //if player won later
-						}
+						//}
 					} else {
 						total[r] += 1;   //if computer won
 					}
 				} else {
-					count_wins(n+1, r);  //recusive
+					count_wins(n+1, r, k);  //recusive
 				}
 				height[i]--;
 				map[height[i]+3][i+3] = 0;	//b from i
@@ -133,13 +133,13 @@ void count_wins(int n, int r) {
 	}
 }
 
-int move_computer() {
+int move_computer(int k) {
 	int i, c;
 	for (i=0; i<7; i++) {
 		if (height[i]!=6) {
-			map[height[i]+3][i+3] = 2;  //comp to i
+			map[height[i]+3][i+3] = k;  //comp to i
 			height[i]++;
-			if (check_win(i, 2)) {
+			if (check_win(i, k)) {
 				return i;
 			}
 			height[i]--;
@@ -149,15 +149,15 @@ int move_computer() {
 	memset(total, 0, sizeof total);
 	for (i=0; i<7; i++) {
 		if (height[i]!=6) {
-			map[height[i]+3][i+3] = 2;  //comp to i
+			map[height[i]+3][i+3] = k;  //comp to i
 			height[i]++;
-			count_wins(0,i);
+			count_wins(2-k,i,k);
 			height[i]--;
 			map[height[i]+3][i+3] = 0;	//comp from i
 		}
 	}
 	c = get_max();			
-	map[height[c]+3][c+3] = 2;  //comp to c
+	map[height[c]+3][c+3] = k;  //comp to c
 	height[c]++;
 	return c;
 }
@@ -206,8 +206,9 @@ void main() {
 		
 		for (i=0; i<21; i++) {
 			if (n%2 == 0) {
-				u = move_player();
+				u = move_computer(1);
 				draw_board();
+				printf("Player: %d\n",u+1);
 				if (check_win(u, 1)) {
 					win++;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),249);
@@ -216,9 +217,8 @@ void main() {
 					break;
 				}
 			}
-			c = move_computer();
+			c = move_computer(2);
 			draw_board();
-			//printf("%d,%d,%d,%d,%d,%d,%d\n",total[0],total[1],total[2],total[3],total[4],total[5],total[6]);
 			printf("Computer: %d\n",c+1);
 			if (check_win(c, 2)) {
 				loss++;
@@ -228,8 +228,9 @@ void main() {
 				break;
 			}
 			if (n%2 == 1) {
-				u = move_player();
+				u = move_computer(1);
 				draw_board();
+				printf("Player: %d\n",u+1);
 				if (check_win(u, 1)) {
 					win++;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),249);
@@ -246,6 +247,6 @@ void main() {
 			}
 		}
 		n++;
-		getchar();
+		//getchar();
 	}
 }
